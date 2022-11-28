@@ -45,6 +45,7 @@ from .protocol import (AccessibilityProtocolPart,
                        PrintProtocolPart,
                        DebugProtocolPart,
                        VirtualSensorProtocolPart,
+                       UserActivationProtocolPart,
                        merge_dicts)
 
 
@@ -744,6 +745,12 @@ class MarionetteVirtualSensorProtocolPart(VirtualSensorProtocolPart):
     def get_virtual_sensor_information(self, information_parameters):
         raise NotImplementedError("get_virtual_sensor_information not yet implemented")
 
+class MarionetteUserActivationProtocolPart(UserActivationProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def consume_user_activation(self, sensor_type, sensor_params):
+        raise NotImplementedError("consume_user_activation not yet implemented")
 
 class MarionetteProtocol(Protocol):
     implements = [MarionetteBaseProtocolPart,
@@ -765,7 +772,9 @@ class MarionetteProtocol(Protocol):
                   MarionettePrintProtocolPart,
                   MarionetteDebugProtocolPart,
                   MarionetteAccessibilityProtocolPart,
-                  MarionetteVirtualSensorProtocolPart]
+                  MarionetteVirtualSensorProtocolPart,
+                  MarionetteUserActivationProtocolPart,
+                  ]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()
