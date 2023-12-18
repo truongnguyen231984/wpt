@@ -1024,7 +1024,8 @@
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
         },
-        /*
+
+        /**
          * Consumes the user activation
          *
          * Matches the consume-user-activation WebDriver command:
