@@ -15,6 +15,17 @@
     createScript: s => (s.includes("fail") ? null : s.replace("default", "count")),
     createHTML: s => s.replace(/2/g, "3"),
   };
+  const policy_dict_default = {
+    createScript: (s, _, sink) => {
+      assert_equals(sink, 'HTMLScriptElement text');
+      return (s.includes("fail") ? null : s.replace("default", "count"));
+    },
+    createHTML: (s, _, sink) => {
+      assert_equals(sink, 'Element innerHTML');
+      return s.replace(/2/g, "3");
+    },
+  };
+
   const policy = trustedTypes.createPolicy("policy", policy_dict);
 
   // Regression tests for 'Bypass via insertAdjacentText', reported at
@@ -186,7 +197,7 @@
   // after the other tests.
   let default_policy;
   promise_test(t => {
-    default_policy = trustedTypes.createPolicy("default", policy_dict);
+    default_policy = trustedTypes.createPolicy("default", policy_dict_default);
     return Promise.resolve();
   }, "Prep for subsequent tests: Create default policy.");
 
