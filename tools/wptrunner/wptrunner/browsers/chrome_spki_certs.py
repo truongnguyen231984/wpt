@@ -2,7 +2,7 @@
 # DO NOT EDIT MANUALLY.
 
 # tools/certs/web-platform.test.pem
-WPT_FINGERPRINT = 'sCJ8962Wxqgz44IKoPQLcDT7YRRAxO2w1iYIqpMYHhg='
+WPT_FINGERPRINT = 'kZSHZc6sh3wmFYEYk9+IpfqvalS8J4jf84rA3bm0/3U='
 
 # signed-exchange/resources/127.0.0.1.sxg.pem
 SXG_WPT_FINGERPRINT = '0Rt4mT6SJXojEMHTnKnlJ/hBKMBcI4kteBlhR1eTTdk='
