@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<title>CSS Anchor Positioning: Basic anchor-scope behavior</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#anchor-scope">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  body {
+    margin: 0;
+  }
+
+  .scope-all { anchor-scope: all; }
+  .scope-a { anchor-scope: --a; }
+  .scope-b { anchor-scope: --b; }
+  .scope-ab { anchor-scope: --a, --b; }
+
+  .anchor-a { anchor-name: --a; }
+  .anchor-b { anchor-name: --b; }
+
+  .pos10, .pos20, .pos30, .pos40 {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: skyblue;
+  }
+
+  .pos10 { left: 10px; }
+  .pos20 { left: 20px; }
+  .pos30 { left: 30px; }
+  .pos40 { left: 40px; }
+
+  .anchored-a { position-anchor: --a; }
+  .anchored-b { position-anchor: --b; }
+  .anchored-a, .anchored-b {
+    position: absolute;
+    top: anchor(bottom);
+    left: anchor(left);
+    width: 5px;
+    height: 5px;
+    background: coral;
+  }
+</style>
+<script>
+  function inflate(t, template_element) {
+    t.add_cleanup(() => main.replaceChildren());
+    main.append(template_element.content.cloneNode(true));
+  }
+</script>
+
+<main id=main>
+</main>
+
+
+<template id=test_scope_all_common_ancestor>
+  <div class=scope-all>
+    <div class='pos10 anchor-a'></div>
+    <div class='pos20 anchor-a'></div>
+    <div class='pos30 anchor-a'></div>
+    <div class='pos40 anchor-a'></div><!--A-->
+    <div class=anchored-a></div>
+  </div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_all_common_ancestor);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '40px');
+  }, 'anchor-scope:all on common ancestor');
+</script>
+
+
+<template id=test_scope_named_common_ancestor>
+  <div class=scope-a>
+    <div class='pos10 anchor-a'></div>
+    <div class='pos20 anchor-a'></div>
+    <div class='pos30 anchor-a'></div>
+    <div class='pos40 anchor-a'></div><!--A-->
+    <div class=anchored-a></div>
+  </div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_named_common_ancestor);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '40px');
+  }, 'anchor-scope:--a on common ancestor');
+</script>
+
+
+<template id=test_scope_all_sibling>
+  <div class='pos10 anchor-a'></div>
+  <div class='pos20 anchor-a'></div><!--A-->
+  <div class=scope-all>
+    <div class='pos30 anchor-a'></div>
+    <div class='pos40 anchor-a'></div>
+  </div>
+  <div class=anchored-a></div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_all_sibling);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '20px');
+  }, 'anchor-scope:all on sibling');
+</script>
+
+
+<template id=test_scope_all_multiple>
+  <div class='pos10 anchor-b'></div><!--B-->
+  <div class='pos20 anchor-a'></div><!--A-->
+  <div class=scope-all>
+    <div class='pos30 anchor-b'></div>
+    <div class='pos40 anchor-a'></div>
+  </div>
+  <div class=anchored-a></div>
+  <div class=anchored-b></div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_all_multiple);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '20px');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-b')).left, '10px');
+  }, 'anchor-scope:all scopes multiple names');
+</script>
+
+
+<template id=test_scope_ab>
+  <div class='pos10 anchor-b'></div><!--B-->
+  <div class='pos20 anchor-a'></div><!--A-->
+  <div class=scope-ab>
+    <div class='pos30 anchor-b'></div>
+    <div class='pos40 anchor-a'></div>
+  </div>
+  <div class=anchored-a></div>
+  <div class=anchored-b></div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_ab);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '20px');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-b')).left, '10px');
+  }, 'anchor-scope:--a,--b scopes --a and --b');
+</script>
+
+
+<template id=test_scope_a>
+  <div class='pos10 anchor-b'></div>
+  <div class='pos20 anchor-a'></div><!--A-->
+  <div class=scope-a>
+    <div class='pos30 anchor-b'></div><!--B-->
+    <div class='pos40 anchor-a'></div>
+  </div>
+  <div class=anchored-a></div>
+  <div class=anchored-b></div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_a);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '20px');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-b')).left, '30px');
+  }, 'anchor-scope:--a scopes only --a');
+</script>
+
+
+<template id=test_scope_b>
+  <div class='pos10 anchor-b'></div><!--B-->
+  <div class='pos20 anchor-a'></div>
+  <div class=scope-b>
+    <div class='pos30 anchor-b'></div>
+    <div class='pos40 anchor-a'></div><!--A-->
+  </div>
+  <div class=anchored-a></div>
+  <div class=anchored-b></div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_b);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '40px');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-b')).left, '10px');
+  }, 'anchor-scope:--b scopes only --b');
+</script>
+
+
+<template id=test_scope_named_dynamic>
+  <div class=scope-all>
+    <div class='pos10 anchor-a'></div>
+    <div class='pos20 anchor-a'></div><!--A (after change)-->
+    <div id=dynamic>
+      <div class='pos30 anchor-a'></div>
+      <div class='pos40 anchor-a'></div><!--A (initially)-->
+    </div>
+    <div class=anchored-a></div>
+  </div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_named_dynamic);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '40px');
+    dynamic.classList.add('scope-a');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).left, '20px');
+  }, 'anchor-scope:all appearing dynamically');
+</script>
+
+<template id=test_scope_named_dynamic_in_flow>
+  <div class=scope-all>
+    <style>
+      .anchor-a {
+        width: 100px;
+        height: 100px;
+        background: skyblue;
+      }
+    </style>
+    <div class='anchor-a'></div>
+    <div class='anchor-a'></div><!--A (after change)-->
+    <div id=dynamic>
+      <div class='anchor-a'></div>
+      <div class='anchor-a'></div><!--A (initially)-->
+    </div>
+    <div class=anchored-a></div>
+  </div>
+</template>
+<script>
+  test((t) => {
+    inflate(t, test_scope_named_dynamic_in_flow);
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).top, '400px');
+    dynamic.classList.add('scope-a');
+    assert_equals(getComputedStyle(main.querySelector('.anchored-a')).top, '200px');
+  }, 'anchor-scope:all appearing dynamically (in-flow anchors)');
+</script>
