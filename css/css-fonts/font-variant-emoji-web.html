@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="UTF-8" />
+<title>CSS Fonts: font-variant-emoji web font test</title>
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-variant-emoji-prop" />
+<link rel="match" href="font-variant-emoji-web-ref.html"/>
+<meta name="assert" content="font-variant-emoji sets an emoji's presentation for the web fonts and affect the fallback font selection."/>
+<link rel="stylesheet" type="text/css" href="support/css/variation-sequences.css" />
+<style>
+    .a {
+      font-family: "MonoEmojiFont", "ColorEmojiFont";
+      font-variant-emoji: emoji;
+    }
+
+    .b {
+      font-family: "ColorEmojiFont", "MonoEmojiFont";
+      font-variant-emoji: text;
+    }
+
+    .c {
+      font-family: "MonoEmojiFont", "ColorEmojiFont";
+      font-variant-emoji: unicode;
+    }
+</style>
+<div class="a">&#x1fae8;</div>
+<div class="b">&#x1fae8;</div>
+<div class="c">&#x1fae8;</div>
